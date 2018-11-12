@@ -1,12 +1,17 @@
 import json
-
-
-
+import nltk
 
 if __name__ == '__main__':
     review_data = None
+    with open('yelp_dataset/cleaned_reviews.json') as file:
+        review_data = [json.loads(line) for line in file]
+    output = []
+    print(len(review_data))
+    for i in range(10):
 
-    with open('yelp_dataset/yelp_academic_dataset_review.json') as f:
-        review_data = [json.loads(line) for line in f]
-
-    print(review_data[0],len(review_data))
+        sentence = review_data[i]['text']
+        tokens = nltk.word_tokenize(sentence)
+        tagged = nltk.pos_tag(tokens)
+        entities = nltk.chunk.ne_chunk(tagged)
+        output.append(entities)
+    print(output)
