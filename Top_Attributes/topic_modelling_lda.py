@@ -1,9 +1,13 @@
 import json
+import sys
 import gensim
 from gensim.parsing.preprocessing import STOPWORDS
 from nltk.stem import WordNetLemmatizer, SnowballStemmer
 from nltk.stem.porter import *
 from gensim import corpora, models
+from gensim.test.utils import datapath
+from random import shuffle
+from gensim.models import LdaModel
 
 
 def lemmatize_stemming(text,stemmer):
@@ -18,25 +22,22 @@ def preprocess(text,stemmer):
 
 
 if __name__ == '__main__':
-
+    print("started")
     review_data = None
     with open('yelp_dataset/cleaned_reviews.json') as file:
         review_data = [json.loads(line) for line in file]
-    output = []
-    # for i in review_data:
-    #     if i['useful']>0:
-    #         count+=1
-    #
     print("Input reading done")
     docs = []
     for i in range(len(review_data)):
+        if review_data[i]['useful']>0:
+            sentence = review_data[i]['text']
+            sentence = sentence.split('.')
+            for i in sentence:
+                if len(i) > 0:
+                    docs.append(i)
+    shuffle(docs)
+    docs = docs[:5000000]
 
-        sentence = review_data[i]['text']
-        sentence = sentence.split('.')
-        for i in sentence:
-            if len(i)>0:
-                docs.append(i)
-    docs = docs[:2000000]
     print(len(review_data), len(docs))
 
     del review_data
@@ -54,7 +55,7 @@ if __name__ == '__main__':
     print("Preprocessing Done")
 
     dictionary = gensim.corpora.Dictionary(processed_docs)
-    dictionary.filter_extremes(no_below=1000, no_above=0.5, keep_n=100000)
+    dictionary.filter_extremes(no_below=1000, no_above=0.5, keep_n=200000)
     bow_corpus = [dictionary.doc2bow(doc) for doc in processed_docs]
 
     del processed_docs
@@ -71,7 +72,21 @@ if __name__ == '__main__':
 
     print("Entering TFIDF")
 
+
     #TFIDF
     lda_model_tfidf = gensim.models.LdaMulticore(corpus_tfidf, num_topics=10, id2word=dictionary, passes=2, workers=4)
     for idx, topic in lda_model_tfidf.print_topics(-1):
         print('Topic: {} Word: {}'.format(idx, topic))
+
+    temp_file = datapath("model_new")
+    lda_model_tfidf.save(temp_file)
+
+    # temp_file = datapath("model")
+    # lda_model_tfidf = LdaModel.load(temp_file)
+
+    # for text in unseen:
+    #     bow_vector = dictionary.doc2bow(preprocess(text,stemmer))
+    #     for index, score in sorted(lda_model_tfidf[bow_vector], key=lambda tup: -1 * tup[1]):
+    #         print(text)
+    #         print("Score: {}\t Topic: {}".format(score, lda_model_tfidf.print_topic(index, 5)))
+    #         print("\n")
