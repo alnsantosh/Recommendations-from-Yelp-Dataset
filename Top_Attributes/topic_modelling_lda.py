@@ -22,21 +22,19 @@ def preprocess(text,stemmer):
 
 
 if __name__ == '__main__':
-    print("started")
     review_data = None
     with open('yelp_dataset/cleaned_reviews.json') as file:
         review_data = [json.loads(line) for line in file]
-    print("Input reading done")
     docs = []
     for i in range(len(review_data)):
-        if review_data[i]['useful']>0:
-            sentence = review_data[i]['text']
-            sentence = sentence.split('.')
-            for i in sentence:
-                if len(i) > 0:
-                    docs.append(i)
+        sentence = review_data[i]['text']
+        sentence = sentence.split('.')
+        for i in sentence:
+            if len(i) > 0:
+                docs.append(i)
+    print("Input Reading Done")
     shuffle(docs)
-    docs = docs[:5000000]
+    docs = docs[:10000000]
 
     print(len(review_data), len(docs))
 
@@ -49,13 +47,12 @@ if __name__ == '__main__':
         if i%10000==0:
             print(i)
         processed_docs.append(preprocess(docs[i],stemmer))
+    print("Pre-processing Done")
 
     del docs
-    print(len(processed_docs))
-    print("Preprocessing Done")
 
     dictionary = gensim.corpora.Dictionary(processed_docs)
-    dictionary.filter_extremes(no_below=1000, no_above=0.5, keep_n=200000)
+    dictionary.filter_extremes(no_below=1000, no_above=0.5, keep_n=100000)
     bow_corpus = [dictionary.doc2bow(doc) for doc in processed_docs]
 
     del processed_docs
@@ -74,15 +71,22 @@ if __name__ == '__main__':
 
 
     #TFIDF
-    lda_model_tfidf = gensim.models.LdaMulticore(corpus_tfidf, num_topics=10, id2word=dictionary, passes=2, workers=4)
+    lda_model_tfidf = gensim.models.LdaMulticore(corpus_tfidf, num_topics=5, id2word=dictionary, passes=2, workers=4)
     for idx, topic in lda_model_tfidf.print_topics(-1):
         print('Topic: {} Word: {}'.format(idx, topic))
 
-    temp_file = datapath("model_new")
+    temp_file = datapath("model")
+    dictionary.save_as_text("model_dict")
+    # lda_model_tfidf = LdaModel.load(2'model_filtered_useful')
     lda_model_tfidf.save(temp_file)
+
+
 
     # temp_file = datapath("model")
     # lda_model_tfidf = LdaModel.load(temp_file)
+
+    # model,model_new, model_new2
+    # model_new_dict, model_new2_dict
 
     # for text in unseen:
     #     bow_vector = dictionary.doc2bow(preprocess(text,stemmer))
