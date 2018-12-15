@@ -68,7 +68,7 @@ if __name__ == '__main__':
     for idx, topic in lda_model_tfidf.print_topics(-1):
         print('Topic: {} Word: {}'.format(idx, topic))
 
-    temp_file = datapath("model")
-    dictionary.save_as_text("model_dict")
-    lda_model_tfidf.save(temp_file)
+    # temp_file = datapath("model")
+    dictionary.save_as_text("model_new_dict")
+    lda_model_tfidf.save("Models/model_new")
 

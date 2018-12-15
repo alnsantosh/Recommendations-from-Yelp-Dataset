@@ -43,9 +43,6 @@ if __name__ == '__main__':
     with open('yelp_dataset/cleaned_reviews.json') as file:
         review_data = [json.loads(line) for line in file]
 
-    review_data = review_data[:100000]
-    shuffle(review_data)
-    review_data = review_data[:4000]
 
     print("Input Reading Done",len(review_data))
     attributes= ["Food","Service","Value For Money","Ambience"]
