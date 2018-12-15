@@ -60,13 +60,6 @@ if __name__ == '__main__':
     tfidf = models.TfidfModel(bow_corpus)
     corpus_tfidf = tfidf[bow_corpus]
 
-    # print("Entering BOG")
-    # BOG
-    # lda_model = gensim.models.LdaMulticore(bow_corpus, num_topics=10, id2word=dictionary, passes=2, workers=2)
-    #
-    # for idx, topic in lda_model.print_topics(-1):
-    #     print('Topic: {} \nWords: {}'.format(idx, topic))
-
     print("Entering TFIDF")
 
 
@@ -77,20 +70,5 @@ if __name__ == '__main__':
 
     temp_file = datapath("model")
     dictionary.save_as_text("model_dict")
-    # lda_model_tfidf = LdaModel.load(2'model_filtered_useful')
     lda_model_tfidf.save(temp_file)
 
-
-
-    # temp_file = datapath("model")
-    # lda_model_tfidf = LdaModel.load(temp_file)
-
-    # model,model_new, model_new2
-    # model_new_dict, model_new2_dict
-
-    # for text in unseen:
-    #     bow_vector = dictionary.doc2bow(preprocess(text,stemmer))
-    #     for index, score in sorted(lda_model_tfidf[bow_vector], key=lambda tup: -1 * tup[1]):
-    #         print(text)
-    #         print("Score: {}\t Topic: {}".format(score, lda_model_tfidf.print_topic(index, 5)))
-    #         print("\n")
